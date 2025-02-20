@@ -5,20 +5,20 @@ from PIL import Image
 
 # パラメータのプリセット（テンプレート）
 PARAMETER_SETS = {
-    "default": {"saturation": 2, "level": 8, "sigma_s": 60, "sigma_r": 0.4},
-    "realistic": {"saturation": 1.5, "level": 12, "sigma_s": 80, "sigma_r": 0.3},
-    "anime_style": {"saturation": 2.5, "level": 6, "sigma_s": 50, "sigma_r": 0.5},
-    "monochrome": {"saturation": 1.2, "level": 4, "sigma_s": 100, "sigma_r": 0.2},
+    "default": {"saturation": 2, "level": 8, "smooth_strength": 50, "edge_strength": 0.4},
+    "realistic": {"saturation": 1.5, "level": 12, "smooth_strength": 70, "edge_strength": 0.3},
+    "anime_style": {"saturation": 2.5, "level": 6, "smooth_strength": 40, "edge_strength": 0.5},
+    "monochrome": {"saturation": 1.2, "level": 4, "smooth_strength": 80, "edge_strength": 0.2},
 }
 
-def convert_to_anime_style(image: Image.Image, saturation=2, level=8, sigma_s=60, sigma_r=0.4) -> Image.Image:
+def convert_to_anime_style(image: Image.Image, saturation=2, level=8, smooth_strength=50, edge_strength=0.4) -> Image.Image:
     """
     画像をアニメ風に変換する関数
     :param image: 入力画像（PIL Image）
     :param saturation: 彩度の倍率
     :param level: ポスタリゼーションの色レベル
-    :param sigma_s: エッジを保ったまま平滑化（範囲）
-    :param sigma_r: エッジを保ったまま平滑化（強度）
+    :param smooth_strength: 平滑化の強さ（0-100）
+    :param edge_strength: エッジ保持の強さ（0.0-1.0）
     :return: 変換後のアニメ調画像（PIL Image）
     """
     # PIL -> OpenCV (RGB->BGR)
@@ -30,7 +30,9 @@ def convert_to_anime_style(image: Image.Image, saturation=2, level=8, sigma_s=60
     hsv[..., 1] = np.clip(hsv[..., 1] * saturation, 0, 255)
     saturated = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
 
-    # 2) エッジを保ったまま平滑化（パラメータ適用）
+    # 2) エッジを保ったまま平滑化（新しいパラメータ）
+    sigma_s = smooth_strength  # 50以上でのっぺり感が増す
+    sigma_r = max(0.01, edge_strength)  # 0.0にするとエラーになるので最小値を設定
     smooth = cv2.edgePreservingFilter(saturated, flags=1, sigma_s=sigma_s, sigma_r=sigma_r)
 
     # 3) ポスタリゼーション（ビット落とし）
