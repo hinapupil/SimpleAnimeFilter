@@ -47,7 +47,7 @@ Place JPG, PNG, or BMP images in the `input/` folder.
 
 ### **2. Run the script**
 ```bash
-python script.py
+python main.py
 ```
 
 ### **3. Output files**
