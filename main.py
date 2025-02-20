@@ -3,12 +3,22 @@ import cv2
 import numpy as np
 from PIL import Image
 
-def convert_to_anime_style(image: Image.Image, saturation=2, level=8) -> Image.Image:
+# パラメータのプリセット（テンプレート）
+PARAMETER_SETS = {
+    "default": {"saturation": 2, "level": 8, "sigma_s": 60, "sigma_r": 0.4},
+    "realistic": {"saturation": 1.5, "level": 12, "sigma_s": 80, "sigma_r": 0.3},
+    "anime_style": {"saturation": 2.5, "level": 6, "sigma_s": 50, "sigma_r": 0.5},
+    "monochrome": {"saturation": 1.2, "level": 4, "sigma_s": 100, "sigma_r": 0.2},
+}
+
+def convert_to_anime_style(image: Image.Image, saturation=2, level=8, sigma_s=60, sigma_r=0.4) -> Image.Image:
     """
     画像をアニメ風に変換する関数
     :param image: 入力画像（PIL Image）
-    :param saturation: 彩度の倍率（デフォルト 2）
-    :param level: ポスタリゼーションの色レベル（デフォルト 8）
+    :param saturation: 彩度の倍率
+    :param level: ポスタリゼーションの色レベル
+    :param sigma_s: エッジを保ったまま平滑化（範囲）
+    :param sigma_r: エッジを保ったまま平滑化（強度）
     :return: 変換後のアニメ調画像（PIL Image）
     """
     # PIL -> OpenCV (RGB->BGR)
@@ -20,8 +30,8 @@ def convert_to_anime_style(image: Image.Image, saturation=2, level=8) -> Image.I
     hsv[..., 1] = np.clip(hsv[..., 1] * saturation, 0, 255)
     saturated = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
 
-    # 2) エッジを保ったまま平滑化
-    smooth = cv2.edgePreservingFilter(saturated, flags=1, sigma_s=60, sigma_r=0.4)
+    # 2) エッジを保ったまま平滑化（パラメータ適用）
+    smooth = cv2.edgePreservingFilter(saturated, flags=1, sigma_s=sigma_s, sigma_r=sigma_r)
 
     # 3) ポスタリゼーション（ビット落とし）
     step = 256 // level  # 色レベルに応じた量子化ステップ
@@ -56,17 +66,24 @@ if __name__ == "__main__":
     for filename in os.listdir(input_dir):
         if filename.lower().endswith(valid_extensions):
             input_path = os.path.join(input_dir, filename)
-            output_path = os.path.join(output_dir, filename)
 
-            print(f"Processing: {input_path} -> {output_path}")
+            # すべてのパターンで変換
+            for pattern_name, params in PARAMETER_SETS.items():
+                # 各パターンごとにサブフォルダ作成
+                pattern_output_dir = os.path.join(output_dir, pattern_name)
+                os.makedirs(pattern_output_dir, exist_ok=True)
 
-            # 画像を読み込み
-            image = Image.open(input_path)
+                output_path = os.path.join(pattern_output_dir, filename)
 
-            # アニメ調に変換（彩度2倍、ポスタリゼーション8レベル）
-            anime_image = convert_to_anime_style(image, saturation=2, level=8)
+                print(f"Processing: {input_path} -> {output_path} ({pattern_name})")
 
-            # 保存
-            anime_image.save(output_path)
+                # 画像を読み込み
+                image = Image.open(input_path)
+
+                # アニメ調に変換
+                anime_image = convert_to_anime_style(image, **params)
+
+                # 保存
+                anime_image.save(output_path)
 
     print(f"✅ すべての画像を {output_dir} に保存しました！")
