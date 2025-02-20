@@ -8,6 +8,8 @@ It supports batch processing with multiple filter presets.
 ## 🚀 Features
 - **Batch processing**: Converts all images in the `input/` folder and saves them in `output/`
 - **Edge-preserving smoothing**: Adjustable `smooth_strength` and `edge_strength`
+- **Saturation adjustment**: Control the intensity of colors with `saturation`
+- **Posterization level**: Adjust the number of color levels with `level`
 - **Multiple presets**: Default, realistic, anime-style, and monochrome
 - **Auto-ignore `input/` and `output/` in Git**
 
@@ -16,7 +18,7 @@ It supports batch processing with multiple filter presets.
 ## 📥 Installation
 
 ### **1. Requirements**
-- **Python 3.10+**
+- **Python 3.13.2**
 - `pip` (Python package manager)
 
 ### **2. Clone the repository**
@@ -83,4 +85,3 @@ See [LICENSE](LICENSE) for details.
 - Pull requests are welcome!
 
 🚀 Enjoy!
-```
