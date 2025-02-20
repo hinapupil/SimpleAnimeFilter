@@ -22,19 +22,29 @@ It supports batch processing with multiple filter presets.
 - `pip` (Python package manager)
 
 ### **2. Clone the repository**
-```bash
+```sh
 git clone https://github.com/yourusername/SimpleAnimeFilter.git
 cd SimpleAnimeFilter
 ```
 
 ### **3. Create a virtual environment**
-```bash
+
+Linux
+```sh
 python -m venv venv
-source venv/Scripts/activate  # For Git Bash
+source venv/Scripts/activate
+# deactivate
+```
+
+Windows
+```sh
+python -m venv venv
+venv\Scripts\activate
+# venv\Scripts\deactivate.bat
 ```
 
 ### **4. Install dependencies**
-```bash
+```sh
 pip install -r requirements.txt
 ```
 
@@ -46,7 +56,7 @@ pip install -r requirements.txt
 Place JPG, PNG, or BMP images in the `input/` folder.
 
 ### **2. Run the script**
-```bash
+```sh
 python main.py
 ```
 
