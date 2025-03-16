@@ -58,8 +58,8 @@ def main(page: ft.Page):
     def on_save_dialog_result(e: ft.FilePickerResultEvent):
         if e.path:
             save_path = e.path
-            if not (save_path.lower().endswith(".jpg") or save_path.lower().endswith(".jpeg")):
-                save_path += ".jpg"
+            if not (save_path.lower().endswith(".jpg") or save_path.lower().endswith(".jpeg") or save_path.lower().endswith(".png")):
+                save_path += ".png"
             try:
                 if original_image:
                     # テンプレートパラメータを適用した最終画像を保存
@@ -70,7 +70,7 @@ def main(page: ft.Page):
                         smooth_strength=slider_smooth.value,
                         edge_strength=slider_edge.value
                     )
-                    processed_full.save(save_path, format="JPEG")
+                    processed_full.save(save_path, format="PNG")
                     print(f"画像を保存しました: {save_path}")
             except Exception as ex:
                 print(f"画像の保存に失敗しました: {ex}")
@@ -80,9 +80,9 @@ def main(page: ft.Page):
         text="Export",
         icon=ft.Icons.SAVE,
         on_click=lambda _: file_picker_save.save_file(
-            file_name="output.jpg",
+            file_name="output.png",
             file_type=ft.FilePickerFileType.CUSTOM,
-            allowed_extensions=["jpg"]
+            allowed_extensions=["png"]
         ),
         disabled=True
     )
